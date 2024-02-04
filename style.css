@@ -13,17 +13,18 @@ body, html {
 
 #flashcard-container {
     perspective: 1000px;
-    max-width: 90%;
-    max-height: 90%;
-    width: 300px; /* Default width */
-    height: 200px; /* Default height */
+    width: 95%; /* Use most of the screen width */
+    max-width: 600px; /* Maximum width for larger screens */
+    height: 80%; /* Use most of the screen height */
+    max-height: 400px; /* Maximum height for larger screens */
+    margin: 2% auto; /* Centering and providing some margin */
 }
 
 #flashcard {
     width: 100%;
     height: 100%;
     transform-style: preserve-3d;
-    transition: transform 0.6s;
+    transition: transform 0.3s ease-out; /* Smooth out the transition for moving back */
     cursor: pointer;
 }
 
@@ -35,23 +36,28 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #333;
-    font-size: 20px;
-    text-align: center;
+    border: 1px solid #ccc;
     border-radius: 10px;
-    padding: 20px;
-    box-sizing: border-box;
+    padding: 20px; /* Ensure content doesn't touch the edges */
+    box-sizing: border-box; /* Include padding in the element's total width and height */
+    font-size: 1.5rem; /* Larger text for better readability */
 }
 
 .front {
-    background: #fff;
+    background: #f9f9f9;
 }
 
 .back {
-    background: #f1f1f1;
+    background: #ddd;
     transform: rotateY(180deg);
 }
 
-.flipped {
+#flashcard.flipped {
     transform: rotateY(180deg);
+}
+
+@media (orientation: portrait) {
+    .card-side {
+        font-size: 2rem; /* Slightly larger text for portrait mode */
+    }
 }
