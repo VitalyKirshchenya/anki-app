@@ -1,122 +1,88 @@
-const flashcards = [
-    { question: "What is 2 + 2?", answer: "4" },
-    { question: "What is the capital of France?", answer: "Paris" },
-    { question: "What is the largest mammal?", answer: "Blue Whale" }
-];
+document.addEventListener('DOMContentLoaded', () => {
+    const flashcards = [
+        { question: "What is 2 + 2?", answer: "4" },
+        { question: "What is the capital of France?", answer: "Paris" },
+        { question: "What is the largest mammal?", answer: "Blue Whale" }
+    ];
 
-let currentCardIndex = 0;
-let touchStartX = 0;
-let touchEndX = 0;
-let touchMoved = false; // Flag to track touch movement
-const swipeThreshold = 150; // Minimum distance (in pixels) for a swipe to trigger a card change.
-
-function updateFlashcard() {
-    const flashcard = document.getElementById('flashcard');
-    const front = flashcard.querySelector('.front');
-    const back = flashcard.querySelector('.back');
-
-    // Reset the flip state to ensure the front side is shown first
-    flashcard.classList.remove('flipped');
-
-    // Update the content of the flashcard
-    front.textContent = flashcards[currentCardIndex].question;
-    back.textContent = flashcards[currentCardIndex].answer;
-}
-
-function showNextCard() {
-    currentCardIndex = (currentCardIndex + 1) % flashcards.length;
-    updateFlashcard();
-}
-
-function showPreviousCard() {
-    currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
-    updateFlashcard();
-}
-
-function handleTouchStart(e) {
-    touchStartX = e.changedTouches[0].screenX;
-    touchMoved = false; // Reset touchMoved flag
-}
-
-function handleTouchMove(e) {
-    const touchMoveX = e.changedTouches[0].screenX;
-    const moveDistance = touchMoveX - touchStartX;
-
-    // If there's enough movement, set the touchMoved flag to true
-    if (Math.abs(moveDistance) >= swipeThreshold) {
-        touchMoved = true;
-    }
+    let currentCardIndex = 0;
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let touchMoved = false;
+    const swipeThreshold = 150;
 
     const flashcard = document.getElementById('flashcard');
 
-    // Move the card with the finger
-    flashcard.style.transform = `translateX(${moveDistance}px)`;
-
-    // Optionally, you can add some rotation based on the move distance for a more dynamic effect
-    const rotation = moveDistance / 20; // Adjust rotation sensitivity as needed
-    flashcard.style.transform += ` rotate(${rotation}deg)`;
-}
-
-function handleTouchEnd(e) {
-    touchEndX = e.changedTouches[0].screenX;
-
-    // Check if it was a swipe or a tap based on touchMoved flag
-    if (!touchMoved) {
-        // It's a tap, toggle the flip class
-        const flashcard = document.getElementById('flashcard');
-        flashcard.classList.toggle('flipped');
-        // Reset any transformations applied during tap
-        flashcard.style.transform = 'none';
-    } else {
-        // It's a swipe, handle the swipe gesture
-        handleSwipeGesture();
+    function updateFlashcard() {
+        const front = flashcard.querySelector('.front');
+        const back = flashcard.querySelector('.back');
+        flashcard.classList.remove('flipped');
+        front.textContent = flashcards[currentCardIndex].question;
+        back.textContent = flashcards[currentCardIndex].answer;
     }
-}
 
-function handleSwipeGesture() {
-    const swipeDistance = touchEndX - touchStartX;
+    function showNextCard() {
+        currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+        updateFlashcard();
+    }
 
-    if (Math.abs(swipeDistance) >= swipeThreshold) {
-        if (swipeDistance < 0) {
-            // Swipe left: Show next card with an animation
-            animateCardOut('left');
+    function showPreviousCard() {
+        currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
+        updateFlashcard();
+    }
+
+    function handleTouchStart(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchMoved = false;
+    }
+
+    function handleTouchMove(e) {
+        const touchMoveX = e.changedTouches[0].screenX;
+        const moveDistance = touchMoveX - touchStartX;
+        touchMoved = Math.abs(moveDistance) >= swipeThreshold;
+        const rotation = moveDistance / 20;
+        flashcard.style.transform = `translateX(${moveDistance}px) rotate(${rotation}deg)`;
+    }
+
+    function handleTouchEnd() {
+        if (!touchMoved) {
+            flashcard.classList.toggle('flipped');
+            flashcard.style.transform = 'none';
         } else {
-            // Swipe right: Show previous card with an animation
-            animateCardOut('right');
+            handleSwipeGesture();
         }
-    } else {
-        // Not a full swipe, return card to the original position
-        const flashcard = document.getElementById('flashcard');
-        flashcard.style.transform = 'translateX(0px) rotate(0deg)';
     }
-}
 
-function animateCardOut(direction) {
-    const flashcard = document.getElementById('flashcard');
-    const outPosition = direction === 'left' ? '-100vw' : '100vw';
-    flashcard.style.transition = 'transform 0.3s ease-out';
-    flashcard.style.transform = `translateX(${outPosition})`;
-
-    // Wait for the animation to finish before showing the next card
-    flashcard.addEventListener('transitionend', () => {
-        if (direction === 'left') {
-            showNextCard();
+    function handleSwipeGesture() {
+        const swipeDistance = touchEndX - touchStartX;
+        if (Math.abs(swipeDistance) >= swipeThreshold) {
+            animateCardOut(swipeDistance < 0 ? 'left' : 'right');
         } else {
-            showPreviousCard();
+            resetCardPosition();
         }
-        // Reset the card's position and remove the transition for an instant update
+    }
+
+    function animateCardOut(direction) {
+        const outPosition = direction === 'left' ? '-100vw' : '100vw';
+        flashcard.style.transition = 'transform 0.3s ease-out';
+        flashcard.style.transform = `translateX(${outPosition})`;
+
+        flashcard.addEventListener('transitionend', () => {
+            direction === 'left' ? showNextCard() : showPreviousCard();
+            resetCardPosition();
+        }, { once: true });
+    }
+
+    function resetCardPosition() {
         flashcard.style.transition = '';
         flashcard.style.transform = 'translateX(0px) rotate(0deg)';
-    }, { once: true });
-}
+        touchMoved = false; // Reset for the next interaction
+    }
 
-document.addEventListener('DOMContentLoaded', () => {
     // Initialize the first flashcard
     updateFlashcard();
 
-    const flashcard = document.getElementById('flashcard');
-
-    // Add touch event listeners for swipe functionality
+    // Add touch event listeners
     flashcard.addEventListener('touchstart', handleTouchStart, false);
     flashcard.addEventListener('touchmove', handleTouchMove, false);
     flashcard.addEventListener('touchend', handleTouchEnd, false);
