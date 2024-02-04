@@ -45,12 +45,14 @@ body, html {
 
 .front {
     background: #f9f9f9;
+    transform: rotateY(0deg); /* Added */
 }
 
 .back {
     background: #ddd;
-    transform: rotateY(180deg);
+    transform: rotateY(180deg); /* Added */
 }
+
 
 #flashcard.flipped {
     transform: rotateY(180deg);
