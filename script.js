@@ -68,7 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
         touchEndX = e.changedTouches[0].screenX;
         handleSwipeGesture();
     });
-    flashcard.addEventListener('click', () => {
+    if (Math.abs(touchEndX - touchStartX) < 10) { // 10px threshold to distinguish click from swipe
         flashcard.classList.toggle('flipped');
+        if (flashcard.classList.contains('flipped')) {
+            flashcard.style.transform = 'rotateY(180deg)';
+        } else {
+            flashcard.style.transform = 'none'; // Reset to front side
+        }
     });
 });
