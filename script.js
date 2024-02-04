@@ -7,6 +7,7 @@ const flashcards = [
 let currentCardIndex = 0;
 let touchStartX = 0;
 let touchEndX = 0;
+let clickInProgress = false;
 const swipeThreshold = 150; // Minimum distance (in pixels) for a swipe to trigger a card change.
 
 function updateFlashcard() {
@@ -54,15 +55,21 @@ function handleTouchEnd(e) {
 
     // Check if it was a swipe or a click
     if (Math.abs(touchEndX - touchStartX) < swipeThreshold) {
-        // It's a click, toggle the flip class
-        const flashcard = document.getElementById('flashcard');
-        flashcard.classList.toggle('flipped');
-        // Reset any transformations applied during swipe
-        flashcard.style.transform = 'none';
+        // It's a click
+        if (!clickInProgress) {
+            // Toggle the flip class only if no swipe is in progress
+            const flashcard = document.getElementById('flashcard');
+            flashcard.classList.toggle('flipped');
+            // Reset any transformations applied during swipe
+            flashcard.style.transform = 'none';
+        }
     } else {
         // It's a swipe, handle the swipe gesture
         handleSwipeGesture();
     }
+
+    // Reset the click in progress
+    clickInProgress = false;
 }
 
 function handleSwipeGesture() {
@@ -77,7 +84,7 @@ function handleSwipeGesture() {
             animateCardOut('right');
         }
     } else {
-        // Not a full swipe, return card to original position
+        // Not a full swipe, return card to the original position
         const flashcard = document.getElementById('flashcard');
         flashcard.style.transform = 'translateX(0px) rotate(0deg)';
     }
@@ -96,7 +103,7 @@ function animateCardOut(direction) {
         } else {
             showPreviousCard();
         }
-        // Reset the card's position and remove the transition for instant update
+        // Reset the card's position and remove the transition for an instant update
         flashcard.style.transition = '';
         flashcard.style.transform = 'translateX(0px) rotate(0deg)';
     }, { once: true });
@@ -111,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Prevent the default behavior of the click event on mobile devices
     flashcard.addEventListener('click', (e) => {
         e.preventDefault();
+        clickInProgress = true; // Set the click in progress
     });
 
     // Add touch event listeners for swipe functionality
