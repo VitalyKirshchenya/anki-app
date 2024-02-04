@@ -76,4 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
             flashcard.style.transform = 'none'; // Reset to front side
         }
     });
+    flashcard.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    flashcard.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipeGesture();
+    });
 });
