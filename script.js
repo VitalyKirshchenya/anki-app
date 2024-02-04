@@ -51,7 +51,18 @@ function handleTouchMove(e) {
 
 function handleTouchEnd(e) {
     touchEndX = e.changedTouches[0].screenX;
-    handleSwipeGesture();
+
+    // Check if it was a swipe or a click
+    if (Math.abs(touchEndX - touchStartX) < swipeThreshold) {
+        // It's a click, toggle the flip class
+        const flashcard = document.getElementById('flashcard');
+        flashcard.classList.toggle('flipped');
+        // Reset any transformations applied during swipe
+        flashcard.style.transform = 'none';
+    } else {
+        // It's a swipe, handle the swipe gesture
+        handleSwipeGesture();
+    }
 }
 
 function handleSwipeGesture() {
@@ -66,7 +77,7 @@ function handleSwipeGesture() {
             animateCardOut('right');
         }
     } else {
-        // Not a full swipe, reset card position
+        // Not a full swipe, return card to original position
         const flashcard = document.getElementById('flashcard');
         flashcard.style.transform = 'translateX(0px) rotate(0deg)';
     }
@@ -96,16 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateFlashcard();
 
     const flashcard = document.getElementById('flashcard');
-
-    // Click event to flip the card
-    flashcard.addEventListener('click', (e) => {
-        // Prevent the click action if a swipe was detected
-        if (Math.abs(touchEndX - touchStartX) < swipeThreshold) {
-            flashcard.classList.toggle('flipped');
-            // Reset any transformations applied during swipe
-            flashcard.style.transform = 'none';
-        }
-    });
 
     // Add touch event listeners for swipe functionality
     flashcard.addEventListener('touchstart', handleTouchStart, false);
