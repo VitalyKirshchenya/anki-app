@@ -69,14 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         handleSwipeGesture();
     });
     flashcard.addEventListener('click', () => {
-    // Check if a swipe was performed, if so, do not flip
-    if (Math.abs(touchEndX - touchStartX) < 10) { // 10px threshold to distinguish click from swipe
         flashcard.classList.toggle('flipped');
-        if (flashcard.classList.contains('flipped')) {
-            flashcard.style.transform = 'rotateY(180deg)';
-        } else {
-            flashcard.style.transform = 'none'; // Reset to front side
-        }
-    }
     });
 });
