@@ -11,11 +11,15 @@ body {
     perspective: 1000px;
 }
 
+/* /mnt/data/flashcard_app/style.css */
 #flashcard {
-    width: 300px;
-    height: 200px;
+    cursor: pointer;
     transform-style: preserve-3d;
     transition: transform 0.6s;
+}
+
+#flashcard.flipped {
+    transform: rotateY(180deg);
 }
 
 .card-side {
@@ -39,6 +43,8 @@ body {
     transform: rotateY(180deg);
 }
 
+
 #next {
     margin-top: 20px;
 }
+
