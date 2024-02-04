@@ -43,15 +43,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const rotation = moveDistance / 20;
         flashcard.style.transform = `translateX(${moveDistance}px) rotate(${rotation}deg)`;
     }
+    function handleTouchEnd(e) {
+        touchEndX = e.changedTouches[0].screenX; // Capture the end position for swipe logic
 
+        if (!touchMoved) {
+            const flashcard = document.getElementById('flashcard');
+            flashcard.classList.toggle('flipped');
+            flashcard.style.transform = 'none'; // Reset transform on tap
+            console.log('Card should flip.');
+        } else {
+            handleSwipeGesture();
+        }
+    }
     function handleTouchEnd() {
         if (!touchMoved) {
+            const flashcard = document.getElementById('flashcard');
             flashcard.classList.toggle('flipped');
+            console.log('Toggled flip class');
             flashcard.style.transform = 'none';
         } else {
             handleSwipeGesture();
         }
     }
+
 
     function handleSwipeGesture() {
         const swipeDistance = touchEndX - touchStartX;
