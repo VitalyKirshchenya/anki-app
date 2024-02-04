@@ -6,6 +6,8 @@ const flashcards = [
 ];
 
 let currentCardIndex = 0;
+let touchStartX = 0;
+let touchEndX = 0;
 
 function updateFlashcard() {
     const flashcard = document.getElementById('flashcard');
@@ -30,6 +32,24 @@ function showPreviousCard() {
     updateFlashcard();
 }
 
+function handleTouchStart(e) {
+    touchStartX = e.changedTouches[0].screenX;
+}
+
+function handleTouchEnd(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipeGesture();
+}
+
+function handleSwipeGesture() {
+    if (touchEndX < touchStartX) {
+        showNextCard();
+    }
+    if (touchEndX > touchStartX) {
+        showPreviousCard();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize the first flashcard
     updateFlashcard();
@@ -40,15 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
         flashcard.classList.toggle('flipped');
     });
 
-    // Navigate to the next card
-    const nextButton = document.getElementById('next');
-    nextButton.addEventListener('click', showNextCard);
-
-    // Navigate to the previous card
-    const prevButton = document.getElementById('prev');
-    if (prevButton) {
-        prevButton.addEventListener('click', showPreviousCard);
-    }
+    // Add touch event listeners for swipe functionality
+    flashcard.addEventListener('touchstart', handleTouchStart, false);
+    flashcard.addEventListener('touchend', handleTouchEnd, false);
 
     // Optional: Add keyboard navigation
     document.addEventListener('keydown', (e) => {
