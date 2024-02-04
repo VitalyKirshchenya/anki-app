@@ -66,7 +66,7 @@ function handleSwipeGesture() {
             animateCardOut('right');
         }
     } else {
-        // Not a full swipe, return card to original position
+        // Not a full swipe, reset card position
         const flashcard = document.getElementById('flashcard');
         flashcard.style.transform = 'translateX(0px) rotate(0deg)';
     }
