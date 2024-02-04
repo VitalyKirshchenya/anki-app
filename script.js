@@ -50,6 +50,32 @@ function handleSwipeGesture() {
         }, 500); // Match the duration of the fly away effect
     }
 }
+document.addEventListener('DOMContentLoaded', () => {
+    updateFlashcard();
+
+    const flashcard = document.getElementById('flashcard');
+
+    flashcard.addEventListener('click', () => {
+        // Check if the action is more of a click than a swipe
+        if (Math.abs(touchEndX - touchStartX) < 10) { // 10px threshold to distinguish click from swipe
+            flashcard.classList.toggle('flipped');
+            if (flashcard.classList.contains('flipped')) {
+                flashcard.style.transform = 'rotateY(180deg)';
+            } else {
+                flashcard.style.transform = 'rotateY(0deg)'; // Reset to front side
+            }
+        }
+    });
+
+    flashcard.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+
+    flashcard.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipeGesture();
+    });
+});
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -68,20 +94,5 @@ document.addEventListener('DOMContentLoaded', () => {
         touchEndX = e.changedTouches[0].screenX;
         handleSwipeGesture();
     });
-    if (Math.abs(touchEndX - touchStartX) < 10) { // 10px threshold to distinguish click from swipe
-        flashcard.classList.toggle('flipped');
-        if (flashcard.classList.contains('flipped')) {
-            flashcard.style.transform = 'rotateY(180deg)';
-        } else {
-            flashcard.style.transform = 'none'; // Reset to front side
-        }
-    });
-    flashcard.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
 
-    flashcard.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipeGesture();
-    });
 });
