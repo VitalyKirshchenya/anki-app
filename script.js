@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchStartX = 0;
     let touchEndX = 0;
     let touchMoved = false;
-    const swipeThreshold = 150;
+    const swipeThreshold = 150; // Distance in pixels to consider as swipe
 
     const flashcard = document.getElementById('flashcard');
 
@@ -33,77 +33,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleTouchStart(e) {
         touchStartX = e.changedTouches[0].screenX;
-        touchMoved = false;
+        touchMoved = false; // Reset touchMoved on new touch sequence
     }
 
     function handleTouchMove(e) {
         const touchMoveX = e.changedTouches[0].screenX;
+        // Determine the distance moved
         const moveDistance = touchMoveX - touchStartX;
-        touchMoved = Math.abs(moveDistance) >= swipeThreshold;
-        const rotation = moveDistance / 20;
-        flashcard.style.transform = `translateX(${moveDistance}px) rotate(${rotation}deg)`;
+        // Mark as moved if the distance is beyond the threshold
+        if (Math.abs(moveDistance) >= swipeThreshold) {
+            touchMoved = true;
+        }
+        e.preventDefault(); // Prevent scrolling during swipe
     }
+
     function handleTouchEnd(e) {
-        touchEndX = e.changedTouches[0].screenX; // Capture the end position for swipe logic
-
-        if (!touchMoved) {
-            const flashcard = document.getElementById('flashcard');
-            flashcard.classList.toggle('flipped');
-            flashcard.style.transform = 'none'; // Reset transform on tap
-            console.log('Card should flip.');
-        } else {
-            handleSwipeGesture();
-        }
-    }
-    function handleTouchEnd() {
-        if (!touchMoved) {
-            const flashcard = document.getElementById('flashcard');
-            flashcard.classList.toggle('flipped');
-            console.log('Toggled flip class');
-            flashcard.style.transform = 'none';
-        } else {
-            handleSwipeGesture();
-        }
-    }
-
-
-    function handleSwipeGesture() {
+        touchEndX = e.changedTouches[0].screenX;
         const swipeDistance = touchEndX - touchStartX;
+
+        // Check for swipe gesture
         if (Math.abs(swipeDistance) >= swipeThreshold) {
-            animateCardOut(swipeDistance < 0 ? 'left' : 'right');
-        } else {
-            resetCardPosition();
+            handleSwipeGesture(swipeDistance);
+        } else if (!touchMoved) {
+            // It was a tap, not a swipe
+            flashcard.classList.toggle('flipped');
         }
+        // Reset touchMoved for the next action
+        touchMoved = false;
+        e.preventDefault(); // Prevent additional actions on touch end
     }
 
-    function animateCardOut(direction) {
-        const outPosition = direction === 'left' ? '-100vw' : '100vw';
-        flashcard.style.transition = 'transform 0.3s ease-out';
-        flashcard.style.transform = `translateX(${outPosition})`;
-
-        flashcard.addEventListener('transitionend', () => {
-            direction === 'left' ? showNextCard() : showPreviousCard();
-            resetCardPosition();
-        }, { once: true });
-    }
-
-    function resetCardPosition() {
-        flashcard.style.transition = '';
-        flashcard.style.transform = 'translateX(0px) rotate(0deg)';
-        touchMoved = false; // Reset for the next interaction
+    function handleSwipeGesture(swipeDistance) {
+        if (swipeDistance < 0) {
+            showNextCard();
+        } else {
+            showPreviousCard();
+        }
     }
 
     // Initialize the first flashcard
     updateFlashcard();
 
-    // Add touch event listeners
+    // Add touch event listeners for the flashcard
     flashcard.addEventListener('touchstart', handleTouchStart, false);
     flashcard.addEventListener('touchmove', handleTouchMove, false);
     flashcard.addEventListener('touchend', handleTouchEnd, false);
 
     // Optional: Add keyboard navigation
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') showNextCard();
-        if (e.key === 'ArrowLeft') showPreviousCard();
+        if (e.key === 'ArrowRight') {
+            showNextCard();
+        } else if (e.key === 'ArrowLeft') {
+            showPreviousCard();
+        }
     });
 });
