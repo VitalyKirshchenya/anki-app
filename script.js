@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     nextButton.addEventListener('click', showNextCard);
 
     // Navigate to the previous card
-    const prevButton = document.getElementById('prev'); // Ensure you have a button with id="prev" in your HTML
+    const prevButton = document.getElementById('prev');
     if (prevButton) {
         prevButton.addEventListener('click', showPreviousCard);
     }
