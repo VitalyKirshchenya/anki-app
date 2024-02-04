@@ -108,6 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const flashcard = document.getElementById('flashcard');
 
+    // Prevent the default behavior of the click event on mobile devices
+    flashcard.addEventListener('click', (e) => {
+        e.preventDefault();
+    });
+
     // Add touch event listeners for swipe functionality
     flashcard.addEventListener('touchstart', handleTouchStart, false);
     flashcard.addEventListener('touchmove', handleTouchMove, false);
